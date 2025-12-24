@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼音学习助手 · 光遇风格 ✨</title>
+    <link rel="stylesheet" href="css/sky-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕊️</text></svg>">
+</head>
+<body>
+    <!-- 天空背景装饰 -->
+    <div class="sky-background">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        
+        <!-- 星星 -->
+        <div class="star" style="top: 15%; left: 20%;"></div>
+        <div class="star" style="top: 25%; left: 70%;"></div>
+        <div class="star" style="top: 60%; left: 10%;"></div>
+        <div class="star" style="top: 80%; left: 85%;"></div>
+    </div>
+    
+    <!-- 光遇蜡烛 -->
+    <div class="candle" onclick="playRandomPinyin()" title="点击播放随机拼音"></div>
+
+    <div class="sky-container">
+        <!-- 头部 -->
+        <header class="sky-header">
+            <div class="sky-character"></div>
+            <h1 class="sky-title">
+                <i class="fas fa-dove"></i>
+                拼音学习助手
+                <i class="fas fa-campfire"></i>
+            </h1>
+            <p class="sky-subtitle">在梦幻的天空王国中学习汉语拼音 🕊️✨</p>
+            <div style="margin-top: 20px;">
+                <button class="sky-control-btn" onclick="playWelcome()">
+                    <i class="fas fa-play"></i>
+                    开始旅程
+                </button>
+            </div>
+        </header>
+
+        <!-- 音频控制 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-sliders-h"></i>
+                声音控制台
+            </h2>
+            
+            <div class="control-buttons">
+                <button class="sky-control-btn" onclick="playAllShengmu()">
+                    <i class="fas fa-volume-up"></i>
+                    聆听所有声母
+                </button>
+                <button class="sky-control-btn" onclick="playTonePractice()">
+                    <i class="fas fa-music"></i>
+                    声调旋律练习
+                </button>
+                <button class="sky-control-btn" onclick="playRandomPinyin()">
+                    <i class="fas fa-random"></i>
+                    随机星光发音
+                </button>
+                <button class="sky-control-btn record" onclick="toggleRecording()" id="recordBtn">
+                    <i class="fas fa-microphone"></i>
+                    <span id="recordText">录制心声</span>
+                </button>
+                <button class="sky-control-btn stop" onclick="stopAllAudio()">
+                    <i class="fas fa-stop"></i>
+                    静音休憩
+                </button>
+            </div>
+            
+            <div class="now-playing" id="nowPlaying" style="
+                background: rgba(255, 255, 255, 0.2);
+                padding: 15px;
+                border-radius: 20px;
+                margin-top: 20px;
+                text-align: center;
+                color: white;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            ">
+                <i class="fas fa-volume-up"></i> 点击下方的星光开始学习吧 ✨
+            </div>
+        </section>
+
+        <!-- 声母星光区 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-star"></i>
+                声母星光 (21个)
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                点击星光，聆听标准的声母发音，像收集星光一样学习 ✨
+            </p>
+            <div class="pinyin-grid" id="shengmuGrid">
+                <!-- 动态生成声母按钮 -->
+            </div>
+        </section>
+
+        <!-- 韵母云朵区 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-cloud"></i>
+                韵母云朵
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                点击云朵，学习优美的韵母发音，像在云端漫步一样轻松 ☁️
+            </p>
+            <div class="pinyin-grid" id="yunmuGrid">
+                <!-- 动态生成韵母按钮 -->
+            </div>
+        </section>
+
+        <!-- 声调彩虹桥 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-rainbow"></i>
+                声调彩虹桥
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                走过彩虹桥，体验汉语的四个声调，每种颜色代表一个声调 🌈
+            </p>
+            <div class="tone-buttons">
+                <button class="tone-btn" onclick="playPinyin('mā')">
+                    mā <br>
+                    <small style="font-size: 0.7em;">第一声 · 黎明</small>
+                </button>
+                <button class="tone-btn" onclick="playPinyin('má')">
+                    má <br>
+                    <small style="font-size: 0.7em;">第二声 · 日出</small>
+                </button>
+                <button class="tone-btn" onclick="playPinyin('mǎ')">
+                    mǎ <br>
+                    <small style="font-size: 0.7em;">第三声 · 正午</small>
+                </button>
+                <button class="tone-btn" onclick="playPinyin('mà')">
+                    mà <br>
+                    <small style="font-size: 0.7em;">第四声 · 黄昏</small>
+                </button>
+            </div>
+        </section>
+
+        <!-- 常用词花园 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-seedling"></i>
+                友谊花园
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                在花园中学习常用词汇，用汉语结交更多朋友 🌸
+            </p>
+            <div class="words-grid">
+                <button class="word-btn" onclick="playWord('你好')">
+                    <i class="fas fa-hand-peace"></i> 你好
+                </button>
+                <button class="word-btn" onclick="playWord('谢谢')">
+                    <i class="fas fa-heart"></i> 谢谢
+                </button>
+                <button class="word-btn" onclick="playWord('再见')">
+                    <i class="fas fa-waving-hand"></i> 再见
+                </button>
+                <button class="word-btn" onclick="playWord('我爱你')">
+                    <i class="fas fa-kiss-wink-heart"></i> 我爱你
+                </button>
+                <button class="word-btn" onclick="playWord('朋友')">
+                    <i class="fas fa-user-friends"></i> 朋友
+                </button>
+                <button class="word-btn" onclick="playWord('一起玩')">
+                    <i class="fas fa-gamepad"></i> 一起玩
+                </button>
+                <button class="word-btn" onclick="playWord('好美')">
+                    <i class="fas fa-camera"></i> 好美
+                </button>
+                <button class="word-btn" onclick="playWord('加油')">
+                    <i class="fas fa-trophy"></i> 加油
+                </button>
+            </div>
+        </section>
+
+        <!-- 录音山谷 -->
+        <section class="record-section">
+            <h2 class="card-title" style="color: white; border-bottom-color: rgba(255,255,255,0.5);">
+                <i class="fas fa-mountains"></i>
+                回声山谷
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                在山谷中录制你的发音，听听回声，对比改进自己的发音 🗣️ → 🔊
+            </p>
+            
+            <div class="waveform" id="waveform">
+                <!-- 动态波形 -->
+            </div>
+            
+            <div id="recordStatus" style="
+                text-align: center;
+                margin: 20px 0;
+                padding: 15px;
+                background: rgba(255,255,255,0.2);
+                border-radius: 15px;
+                color: white;
+            ">
+                <i class="fas fa-info-circle"></i> 准备好录制你的声音了吗？
+            </div>
+            
+            <audio id="userRecording" controls style="
+                width: 100%;
+                margin-top: 10px;
+                border-radius: 15px;
+                background: rgba(255,255,255,0.1);
+            "></audio>
+            
+            <div style="
+                background: rgba(255, 255, 255, 0.15);
+                padding: 15px;
+                border-radius: 15px;
+                margin-top: 20px;
+                color: white;
+            ">
+                <i class="fas fa-lightbulb"></i>
+                <strong>小贴士：</strong> 先聆听标准发音，然后录音跟读，对比回声改进。每天练习，你会进步飞快！ 🚀
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="sky-footer">
+            <p class="footer-text">
+                <i class="fas fa-dove"></i> 
+                拼音学习助手 · 光遇风格 v1.0
+                <i class="fas fa-campfire"></i>
+            </p>
+            <p class="footer-text" style="margin-top: 10px; font-size: 0.9em;">
+                愿你在学习的旅途中，像光之子一样勇敢前行，收获知识与友谊 ✨🕊️
+            </p>
+            <p class="footer-text" style="margin-top: 10px; font-size: 0.8em; opacity: 0.7;">
+                设计灵感来自《Sky: Children of the Light》 | 技术支持：浏览器语音合成
+            </p>
+        </footer>
+    </div>
+
+    <!-- 音频管理器 -->
+    <script src="js/audio-manager.js"></script>
+    
+    <script>
+        // ==================== 光遇风格拼音数据 ====================
+        const skyPinyinData = {
+            shengmu: [
+                'b', 'p', 'm', 'f', 
+                'd', 't', 'n', 'l', 
+                'g', 'k', 'h', 
+                'j', 'q', 'x', 
+                'zh', 'ch', 'sh', 
+                'r', 'z', 'c', 's'
+            ],
+            yunmu: [
+                'a', 'o', 'e', 'i', 'u', 'ü',
+                'ai', 'ei', 'ao', 'ou',
+                'an', 'en', 'in', 'un', 'ün',
+                'ang', 'eng', 'ing', 'ong',
+                'er'
+            ]
+        };
+
+        // ==================== 页面初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars(50); // 创建更多星星
+            initPinyinButtons();
+            initWaveform();
+            
+            // 欢迎消息
+            setTimeout(() => {
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<i class="fas fa-magic"></i> 欢迎来到拼音天空王国！点击任意星光开始冒险 ✨';
+            }, 1000);
+        });
+
+        // 创建星空
+        function createStars(count) {
+            const bg = document.querySelector('.sky-background');
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.opacity = 0.3 + Math.random() * 0.7;
+                bg.appendChild(star);
+            }
+        }
+
+        // 初始化拼音按钮
+        function initPinyinButtons() {
+            // 声母星光
+            const shengmuGrid = document.getElementById('shengmuGrid');
+            shengmuGrid.innerHTML = skyPinyinData.shengmu.map(pinyin => `
+                <button class="pinyin-light" onclick="playPinyin('${pinyin}')" 
+                        title="点击聆听 ${pinyin} 的发音">
+                    ${pinyin}
+                </button>
+            `).join('');
+            
+            // 韵母云朵
+            const yunmuGrid = document.getElementById('yunmuGrid');
+            yunmuGrid.innerHTML = skyPinyinData.yunmu.map(pinyin => `
+                <button class="pinyin-light" onclick="playPinyin('${pinyin}')"
+                        style="background: linear-gradient(145deg, 
+                            rgba(135, 206, 235, 0.9),
+                            rgba(70, cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼音学习助手 · 光遇风格 ✨</title>
+    <link rel="stylesheet" href="css/sky-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕊️</text></svg>">
+</head>
+<body>
+    <!-- 天空背景装饰 -->
+    <div class="sky-background">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        
+        <!-- 星星 -->
+        <div class="star" style="top: 15%; left: 20%;"></div>
+        <div class="star" style="top: 25%; left: 70%;"></div>
+        <div class="star" style="top: 60%; left: 10%;"></div>
+        <div class="star" style="top: 80%; left: 85%;"></div>
+    </div>
+    
+    <!-- 光遇蜡烛 -->
+    <div class="candle" onclick="playRandomPinyin()" title="点击播放随机拼音"></div>
+
+    <div class="sky-container">
+        <!-- 头部 -->
+        <header class="sky-header">
+            <div class="sky-character"></div>
+            <h1 class="sky-title">
+                <i class="fas fa-dove"></i>
+                拼音学习助手
+                <i class="fas fa-campfire"></i>
+            </h1>
+            <p class="sky-subtitle">在梦幻的天空王国中学习汉语拼音 🕊️✨</p>
+            <div style="margin-top: 20px;">
+                <button class="sky-control-btn" onclick="playWelcome()">
+                    <i class="fas fa-play"></i>
+                    开始旅程
+                </button>
+            </div>
+        </header>
+
+        <!-- 音频控制 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-sliders-h"></i>
+                声音控制台
+            </h2>
+            
+            <div class="control-buttons">
+                <button class="sky-control-btn" onclick="playAllShengmu()">
+                    <i class="fas fa-volume-up"></i>
+                    聆听所有声母
+                </button>
+                <button class="sky-control-btn" onclick="playTonePractice()">
+                    <i class="fas fa-music"></i>
+                    声调旋律练习
+                </button>
+                <button class="sky-control-btn" onclick="playRandomPinyin()">
+                    <i class="fas fa-random"></i>
+                    随机星光发音
+                </button>
+                <button class="sky-control-btn record" onclick="toggleRecording()" id="recordBtn">
+                    <i class="fas fa-microphone"></i>
+                    <span id="recordText">录制心声</span>
+                </button>
+                <button class="sky-control-btn stop" onclick="stopAllAudio()">
+                    <i class="fas fa-stop"></i>
+                    静音休憩
+                </button>
+            </div>
+            
+            <div class="now-playing" id="nowPlaying" style="
+                background: rgba(255, 255, 255, 0.2);
+                padding: 15px;
+                border-radius: 20px;
+                margin-top: 20px;
+                text-align: center;
+                color: white;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            ">
+                <i class="fas fa-volume-up"></i> 点击下方的星光开始学习吧 ✨
+            </div>
+        </section>
+
+        <!-- 声母星光区 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-star"></i>
+                声母星光 (21个)
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                点击星光，聆听标准的声母发音，像收集星光一样学习 ✨
+            </p>
+            <div class="pinyin-grid" id="shengmuGrid">
+                <!-- 动态生成声母按钮 -->
+            </div>
+        </section>
+
+        <!-- 韵母云朵区 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-cloud"></i>
+                韵母云朵
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                点击云朵，学习优美的韵母发音，像在云端漫步一样轻松 ☁️
+            </p>
+            <div class="pinyin-grid" id="yunmuGrid">
+                <!-- 动态生成韵母按钮 -->
+            </div>
+        </section>
+
+        <!-- 声调彩虹桥 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-rainbow"></i>
+                声调彩虹桥
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                走过彩虹桥，体验汉语的四个声调，每种颜色代表一个声调 🌈
+            </p>
+            <div class="tone-buttons">
+                <button class="tone-btn" onclick="playPinyin('mā')">
+                    mā <br>
+                    <small style="font-size: 0.7em;">第一声 · 黎明</small>
+                </button>
+                <button class="tone-btn" onclick="playPinyin('má')">
+                    má <br>
+                    <small style="font-size: 0.7em;">第二声 · 日出</small>
+                </button>
+                <button class="tone-btn" onclick="playPinyin('mǎ')">
+                    mǎ <br>
+                    <small style="font-size: 0.7em;">第三声 · 正午</small>
+                </button>
+                <button class="tone-btn" onclick="playPinyin('mà')">
+                    mà <br>
+                    <small style="font-size: 0.7em;">第四声 · 黄昏</small>
+                </button>
+            </div>
+        </section>
+
+        <!-- 常用词花园 -->
+        <section class="sky-card">
+            <h2 class="card-title">
+                <i class="fas fa-seedling"></i>
+                友谊花园
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                在花园中学习常用词汇，用汉语结交更多朋友 🌸
+            </p>
+            <div class="words-grid">
+                <button class="word-btn" onclick="playWord('你好')">
+                    <i class="fas fa-hand-peace"></i> 你好
+                </button>
+                <button class="word-btn" onclick="playWord('谢谢')">
+                    <i class="fas fa-heart"></i> 谢谢
+                </button>
+                <button class="word-btn" onclick="playWord('再见')">
+                    <i class="fas fa-waving-hand"></i> 再见
+                </button>
+                <button class="word-btn" onclick="playWord('我爱你')">
+                    <i class="fas fa-kiss-wink-heart"></i> 我爱你
+                </button>
+                <button class="word-btn" onclick="playWord('朋友')">
+                    <i class="fas fa-user-friends"></i> 朋友
+                </button>
+                <button class="word-btn" onclick="playWord('一起玩')">
+                    <i class="fas fa-gamepad"></i> 一起玩
+                </button>
+                <button class="word-btn" onclick="playWord('好美')">
+                    <i class="fas fa-camera"></i> 好美
+                </button>
+                <button class="word-btn" onclick="playWord('加油')">
+                    <i class="fas fa-trophy"></i> 加油
+                </button>
+            </div>
+        </section>
+
+        <!-- 录音山谷 -->
+        <section class="record-section">
+            <h2 class="card-title" style="color: white; border-bottom-color: rgba(255,255,255,0.5);">
+                <i class="fas fa-mountains"></i>
+                回声山谷
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">
+                在山谷中录制你的发音，听听回声，对比改进自己的发音 🗣️ → 🔊
+            </p>
+            
+            <div class="waveform" id="waveform">
+                <!-- 动态波形 -->
+            </div>
+            
+            <div id="recordStatus" style="
+                text-align: center;
+                margin: 20px 0;
+                padding: 15px;
+                background: rgba(255,255,255,0.2);
+                border-radius: 15px;
+                color: white;
+            ">
+                <i class="fas fa-info-circle"></i> 准备好录制你的声音了吗？
+            </div>
+            
+            <audio id="userRecording" controls style="
+                width: 100%;
+                margin-top: 10px;
+                border-radius: 15px;
+                background: rgba(255,255,255,0.1);
+            "></audio>
+            
+            <div style="
+                background: rgba(255, 255, 255, 0.15);
+                padding: 15px;
+                border-radius: 15px;
+                margin-top: 20px;
+                color: white;
+            ">
+                <i class="fas fa-lightbulb"></i>
+                <strong>小贴士：</strong> 先聆听标准发音，然后录音跟读，对比回声改进。每天练习，你会进步飞快！ 🚀
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="sky-footer">
+            <p class="footer-text">
+                <i class="fas fa-dove"></i> 
+                拼音学习助手 · 光遇风格 v1.0
+                <i class="fas fa-campfire"></i>
+            </p>
+            <p class="footer-text" style="margin-top: 10px; font-size: 0.9em;">
+                愿你在学习的旅途中，像光之子一样勇敢前行，收获知识与友谊 ✨🕊️
+            </p>
+            <p class="footer-text" style="margin-top: 10px; font-size: 0.8em; opacity: 0.7;">
+                设计灵感来自《Sky: Children of the Light》 | 技术支持：浏览器语音合成
+            </p>
+        </footer>
+    </div>
+
+    <!-- 音频管理器 -->
+    <script src="js/audio-manager.js"></script>
+    
+    <script>
+        // ==================== 光遇风格拼音数据 ====================
+        const skyPinyinData = {
+            shengmu: [
+                'b', 'p', 'm', 'f', 
+                'd', 't', 'n', 'l', 
+                'g', 'k', 'h', 
+                'j', 'q', 'x', 
+                'zh', 'ch', 'sh', 
+                'r', 'z', 'c', 's'
+            ],
+            yunmu: [
+                'a', 'o', 'e', 'i', 'u', 'ü',
+                'ai', 'ei', 'ao', 'ou',
+                'an', 'en', 'in', 'un', 'ün',
+                'ang', 'eng', 'ing', 'ong',
+                'er'
+            ]
+        };
+
+        // ==================== 页面初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars(50); // 创建更多星星
+            initPinyinButtons();
+            initWaveform();
+            
+            // 欢迎消息
+            setTimeout(() => {
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<i class="fas fa-magic"></i> 欢迎来到拼音天空王国！点击任意星光开始冒险 ✨';
+            }, 1000);
+        });
+
+        // 创建星空
+        function createStars(count) {
+            const bg = document.querySelector('.sky-background');
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.opacity = 0.3 + Math.random() * 0.7;
+                bg.appendChild(star);
+            }
+        }
+
+        // 初始化拼音按钮
+        function initPinyinButtons() {
+            // 声母星光
+            const shengmuGrid = document.getElementById('shengmuGrid');
+            shengmuGrid.innerHTML = skyPinyinData.shengmu.map(pinyin => `
+                <button class="pinyin-light" onclick="playPinyin('${pinyin}')" 
+                        title="点击聆听 ${pinyin} 的发音">
+                    ${pinyin}
+                </button>
+            `).join('');
+            
+            // 韵母云朵
+            const yunmuGrid = document.getElementById('yunmuGrid');
+            yunmuGrid.innerHTML = skyPinyinData.yunmu.map(pinyin => `
+                <button class="pinyin-light" onclick="playPinyin('${pinyin}')"
+                        style="background: linear-gradient(145deg, 
+                            rgba(135, 206, 235, 0.9),
+                            rgba(70, 
+cat > css/sky-style.css << 'EOF'
+/* ==================== 光遇风格主题 ==================== */
+:root {
+    /* 光遇主题色系 */
+    --sky-dawn: #FFB6C1;      /* 黎明粉 */
+    --sky-morning: #87CEEB;   /* 晨空蓝 */
+    --sky-day: #A7C7E7;       /* 白日蓝 */
+    --sky-sunset: #FFA07A;    /* 日落橙 */
+    --sky-twilight: #9370DB;  /* 暮光紫 */
+    --sky-night: #4169E1;     /* 夜空蓝 */
+    --sky-star: #FFD700;      /* 星光金 */
+    --sky-cloud: #FFFFFF;     /* 云朵白 */
+    --sky-light: #FFFACD;     /* 烛光黄 */
+    
+    /* 光遇UI颜色 */
+    --ui-cape: #E6E6FA;       /* 斗篷色 */
+    --ui-hair: #8B4513;       /* 发色 */
+    --ui-skin: #FFE4B5;       /* 肤色 */
+    --ui-spirit: #98FB98;     /* 灵魂色 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Comic Sans MS', 'Segoe UI Emoji', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(
+        135deg,
+        var(--sky-dawn) 0%,
+        var(--sky-morning) 25%,
+        var(--sky-day) 50%,
+        var(--sky-twilight) 75%,
+        var(--sky-night) 100%
+    );
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    color: #5D3A1A;
+}
+
+/* 天空背景装饰 */
+.sky-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -100;
+    pointer-events: none;
+}
+
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: float 20s infinite linear;
+}
+
+.cloud:nth-child(1) { top: 10%; left: 10%; width: 100px; height: 60px; animation-delay: 0s; }
+.cloud:nth-child(2) { top: 30%; right: 15%; width: 150px; height: 80px; animation-delay: 5s; }
+.cloud:nth-child(3) { bottom: 20%; left: 20%; width: 120px; height: 70px; animation-delay: 10s; }
+.cloud:nth-child(4) { bottom: 40%; right: 25%; width: 80px; height: 50px; animation-delay: 15s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-20px) translateX(10px); }
+    50% { transform: translateY(0) translateX(20px); }
+    75% { transform: translateY(20px) translateX(10px); }
+}
+
+/* 光之子星星效果 */
+.star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--sky-star);
+    border-radius: 50%;
+    animation: twinkle 3s infinite alternate;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* 主容器 */
+.sky-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 光遇风格头部 */
+.sky-header {
+    text-align: center;
+    padding: 30px;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.sky-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.3) 0%,
+        transparent 70%
+    );
+    animation: rotate 20s linear infinite;
+    z-index: -1;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.sky-title {
+    font-size: 3.5em;
+    background: linear-gradient(135deg, 
+        var(--sky-dawn),
+        var(--sky-star),
+        var(--sky-twilight)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 
+        0 0 30px rgba(255, 214, 0, 0.5),
+        0 0 60px rgba(255, 214, 0, 0.3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.sky-title i {
+    font-size: 1.2em;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.sky-subtitle {
+    font-size: 1.3em;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+}
+
+/* 光之子角色装饰 */
+.sky-character {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: var(--ui-cape);
+    border-radius: 50% 50% 40% 40%;
+    top: -40px;
+    right: 50px;
+    transform: rotate(15deg);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sky-character::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 40px;
+    background: var(--ui-cape);
+    border-radius: 30px;
+    bottom: -20px;
+    left: 10px;
+}
+
+.sky-character::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 20px;
+    background: var(--ui-skin);
+    border-radius: 20px;
+    top: 20px;
+    left: 20px;
+}
+
+/* 卡片样式 - 像光遇中的建筑 */
+.sky-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    border-radius: 30px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.sky-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 215, 0, 0.6);
+}
+
+.sky-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: left 0.5s;
+}
+
+.sky-card:hover::before {
+    left: 100%;
+}
+
+.card-title {
+    font-size: 1.8em;
+    color: var(--sky-night);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.5);
+}
+
+.card-title i {
+    color: var(--sky-star);
+    animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 拼音按钮 - 像光遇中的烛光 */
+.pinyin-light {
+    background: linear-gradient(145deg, 
+        rgba(255, 215, 0, 0.9),
+        rgba(255, 165, 0, 0.9)
+    );
+    border: none;
+    border-radius: 20px;
+    padding: 20px;
+    font-size: 2em;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 10px 20px rgba(255, 215, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.pinyin-light:hover {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 
+        0 15px 30px rgba(255, 215, 0, 0.5),
+        0 0 40px rgba(255, 215, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    animation: glow 1.5s infinite alternate;
+}
+
+.pinyin-light:active {
+    transform: scale(0.95);
+}
+
+@keyframes glow {
+    from { box-shadow: 
+        0 10px 20px rgba(255, 215, 0, 0.3),
+        0 0 30px rgba(255, 215, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+    to { box-shadow: 
+        0 10px 20px rgba(255, 215, 0, 0.4),
+        0 0 50px rgba(255, 215, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+}
+
+.pinyin-light.playing {
+    background: linear-gradient(145deg, 
+        rgba(0, 191, 255, 0.9),
+        rgba(30, 144, 255, 0.9)
+    );
+    animation: pulse 0.5s;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* 拼音网格 */
+.pinyin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* 控制按钮 - 像光遇中的乐器 */
+.sky-control-btn {
+    background: linear-gradient(145deg, 
+        rgba(147, 112, 219, 0.9),
+        rgba(138, 43, 226, 0.9)
+    );
+    border: none;
+    border-radius: 25px;
+    padding: 18px 30px;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 10px 20px rgba(147, 112, 219, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sky-control-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.2) 0%,
+        transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.sky-control-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 15px 30px rgba(147, 112, 219, 0.4),
+        0 0 40px rgba(147, 112, 219, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.sky-control-btn:hover::after {
+    opacity: 1;
+}
+
+.sky-control-btn.stop {
+    background: linear-gradient(145deg, 
+        rgba(255, 99, 71, 0.9),
+        rgba(255, 69, 0, 0.9)
+    );
+}
+
+.sky-control-btn.record {
+    background: linear-gradient(145deg, 
+        rgba(50, 205, 50, 0.9),
+        rgba(34, 139, 34, 0.9)
+    );
+}
+
+.control-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* 声调按钮 - 不同颜色代表不同声调 */
+.tone-btn {
+    background: linear-gradient(145deg, 
+        var(--ui-spirit),
+        rgba(152, 251, 152, 0.8)
+    );
+    border: none;
+    border-radius: 20px;
+    padding: 25px 15px;
+    font-size: 1.8em;
+    color: #2E8B57;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.tone-btn:nth-child(1) { 
+    background: linear-gradient(145deg, #FFB6C1, #FF69B4);
+    color: #8B0000;
+}
+.tone-btn:nth-child(2) { 
+    background: linear-gradient(145deg, #FFD700, #FFA500);
+    color: #8B4513;
+}
+.tone-btn:nth-child(3) { 
+    background: linear-gradient(145deg, #98FB98, #32CD32);
+    color: #006400;
+}
+.tone-btn:nth-child(4) { 
+    background: linear-gradient(145deg, #87CEEB, #4169E1);
+    color: #00008B;
+}
+
+.tone-btn:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.tone-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* 常用词按钮 */
+.word-btn {
+    background: linear-gradient(145deg, 
+        rgba(255, 182, 193, 0.9),
+        rgba(255, 105, 180, 0.9)
+    );
+    border: none;
+    border-radius: 20px;
+    padding: 20px 15px;
+    font-size: 1.3em;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 16px rgba(255, 105, 180, 0.2);
+}
+
+.word-btn:hover {
+    transform: translateY(-5px) rotate(3deg);
+    box-shadow: 0 12px 24px rgba(255, 105, 180, 0.3);
+}
+
+.words-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* 录音区域 */
+.record-section {
+    background: linear-gradient(145deg, 
+        rgba(135, 206, 235, 0.3),
+        rgba(70, 130, 180, 0.3)
+    );
+    border-radius: 30px;
+    padding: 30px;
+    margin: 30px 0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.waveform {
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.wave-bar {
+    position: absolute;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(to top, 
+        var(--sky-star),
+        var(--sky-sunset)
+    );
+    border-radius: 3px;
+    animation: wave 1.5s infinite ease-in-out;
+}
+
+@keyframes wave {
+    0%, 100% { height: 30%; }
+    50% { height: 90%; }
+}
+
+/* 页脚 */
+.sky-footer {
+    text-align: center;
+    padding: 30px;
+    margin-top: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.footer-text {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .sky-title {
+        font-size: 2.5em;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .pinyin-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+    
+    .tone-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .control-buttons {
+        flex-direction: column;
+    }
+    
+    .sky-control-btn {
+        width: 100%;
+    }
+}
+
+/* 特别效果：光遇蜡烛 */
+.candle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 60px;
+    background: linear-gradient(to bottom, 
+        #8B4513 0%,
+        #A0522D 30%,
+        #D2691E 100%
+    );
+    border-radius: 20px 20px 10px 10px;
+    z-index: 1000;
+    cursor: pointer;
+    animation: candleFloat 3s infinite ease-in-out;
+}
+
+.candle::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 30px;
+    background: linear-gradient(to bottom, 
+        #FFD700,
+        #FF8C00,
+        #FF4500
+    );
+    border-radius: 10px 10px 5px 5px;
+    animation: flame 1.5s infinite alternate;
+}
+
+@keyframes candleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes flame {
+    0%, 100% { 
+        height: 30px;
+        box-shadow: 0 0 20px #FFD700, 0 0 40px #FF8C00;
+    }
+    50% { 
+        height: 40px;
+        box-shadow: 0 0 30px #FFD700, 0 0 60px #FF8C00;
+    }
+}
+EOFcat > css/sky-style.css << 'EOF'
+/* ==================== 光遇风格主题 ==================== */
+:root {
+    /* 光遇主题色系 */
+    --sky-dawn: #FFB6C1;      /* 黎明粉 */
+    --sky-morning: #87CEEB;   /* 晨空蓝 */
+    --sky-day: #A7C7E7;       /* 白日蓝 */
+    --sky-sunset: #FFA07A;    /* 日落橙 */
+    --sky-twilight: #9370DB;  /* 暮光紫 */
+    --sky-night: #4169E1;     /* 夜空蓝 */
+    --sky-star: #FFD700;      /* 星光金 */
+    --sky-cloud: #FFFFFF;     /* 云朵白 */
+    --sky-light: #FFFACD;     /* 烛光黄 */
+    
+    /* 光遇UI颜色 */
+    --ui-cape: #E6E6FA;       /* 斗篷色 */
+    --ui-hair: #8B4513;       /* 发色 */
+    --ui-skin: #FFE4B5;       /* 肤色 */
+    --ui-spirit: #98FB98;     /* 灵魂色 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Comic Sans MS', 'Segoe UI Emoji', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(
+        135deg,
+        var(--sky-dawn) 0%,
+        var(--sky-morning) 25%,
+        var(--sky-day) 50%,
+        var(--sky-twilight) 75%,
+        var(--sky-night) 100%
+    );
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    color: #5D3A1A;
+}
+
+/* 天空背景装饰 */
+.sky-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -100;
+    pointer-events: none;
+}
+
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: float 20s infinite linear;
+}
+
+.cloud:nth-child(1) { top: 10%; left: 10%; width: 100px; height: 60px; animation-delay: 0s; }
+.cloud:nth-child(2) { top: 30%; right: 15%; width: 150px; height: 80px; animation-delay: 5s; }
+.cloud:nth-child(3) { bottom: 20%; left: 20%; width: 120px; height: 70px; animation-delay: 10s; }
+.cloud:nth-child(4) { bottom: 40%; right: 25%; width: 80px; height: 50px; animation-delay: 15s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-20px) translateX(10px); }
+    50% { transform: translateY(0) translateX(20px); }
+    75% { transform: translateY(20px) translateX(10px); }
+}
+
+/* 光之子星星效果 */
+.star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--sky-star);
+    border-radius: 50%;
+    animation: twinkle 3s infinite alternate;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* 主容器 */
+.sky-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 光遇风格头部 */
+.sky-header {
+    text-align: center;
+    padding: 30px;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.sky-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.3) 0%,
+        transparent 70%
+    );
+    animation: rotate 20s linear infinite;
+    z-index: -1;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.sky-title {
+    font-size: 3.5em;
+    background: linear-gradient(135deg, 
+        var(--sky-dawn),
+        var(--sky-star),
+        var(--sky-twilight)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 
+        0 0 30px rgba(255, 214, 0, 0.5),
+        0 0 60px rgba(255, 214, 0, 0.3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.sky-title i {
+    font-size: 1.2em;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.sky-subtitle {
+    font-size: 1.3em;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+}
+
+/* 光之子角色装饰 */
+.sky-character {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: var(--ui-cape);
+    border-radius: 50% 50% 40% 40%;
+    top: -40px;
+    right: 50px;
+    transform: rotate(15deg);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sky-character::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 40px;
+    background: var(--ui-cape);
+    border-radius: 30px;
+    bottom: -20px;
+    left: 10px;
+}
+
+.sky-character::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 20px;
+    background: var(--ui-skin);
+    border-radius: 20px;
+    top: 20px;
+    left: 20px;
+}
+
+/* 卡片样式 - 像光遇中的建筑 */
+.sky-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    border-radius: 30px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.sky-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 215, 0, 0.6);
+}
+
+.sky-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: left 0.5s;
+}
+
+.sky-card:hover::before {
+    left: 100%;
+}
+
+.card-title {
+    font-size: 1.8em;
+    color: var(--sky-night);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.5);
+}
+
+.card-title i {
+    color: var(--sky-star);
+    animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 拼音按钮 - 像光遇中的烛光 */
+.pinyin-light {
+    background: linear-gradient(145deg, 
+        rgba(255, 215, 0, 0.9),
+        rgba(255, 165, 0, 0.9)
+    );
+    border: none;
+    border-radius: 20px;
+    padding: 20px;
+    font-size: 2em;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 10px 20px rgba(255, 215, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.pinyin-light:hover {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 
+        0 15px 30px rgba(255, 215, 0, 0.5),
+        0 0 40px rgba(255, 215, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    animation: glow 1.5s infinite alternate;
+}
+
+.pinyin-light:active {
+    transform: scale(0.95);
+}
+
+@keyframes glow {
+    from { box-shadow: 
+        0 10px 20px rgba(255, 215, 0, 0.3),
+        0 0 30px rgba(255, 215, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+    to { box-shadow: 
+        0 10px 20px rgba(255, 215, 0, 0.4),
+        0 0 50px rgba(255, 215, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+}
+
+.pinyin-light.playing {
+    background: linear-gradient(145deg, 
+        rgba(0, 191, 255, 0.9),
+        rgba(30, 144, 255, 0.9)
+    );
+    animation: pulse 0.5s;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* 拼音网格 */
+.pinyin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* 控制按钮 - 像光遇中的乐器 */
+.sky-control-btn {
+    background: linear-gradient(145deg, 
+        rgba(147, 112, 219, 0.9),
+        rgba(138, 43, 226, 0.9)
+    );
+    border: none;
+    border-radius: 25px;
+    padding: 18px 30px;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 10px 20px rgba(147, 112, 219, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sky-control-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.2) 0%,
+        transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.sky-control-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 15px 30px rgba(147, 112, 219, 0.4),
+        0 0 40px rgba(147, 112, 219, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.sky-control-btn:hover::after {
+    opacity: 1;
+}
+
+.sky-control-btn.stop {
+    background: linear-gradient(145deg, 
+        rgba(255, 99, 71, 0.9),
+        rgba(255, 69, 0, 0.9)
+    );
+}
+
+.sky-control-btn.record {
+    background: linear-gradient(145deg, 
+        rgba(50, 205, 50, 0.9),
+        rgba(34, 139, 34, 0.9)
+    );
+}
+
+.control-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* 声调按钮 - 不同颜色代表不同声调 */
+.tone-btn {
+    background: linear-gradient(145deg, 
+        var(--ui-spirit),
+        rgba(152, 251, 152, 0.8)
+    );
+    border: none;
+    border-radius: 20px;
+    padding: 25px 15px;
+    font-size: 1.8em;
+    color: #2E8B57;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.tone-btn:nth-child(1) { 
+    background: linear-gradient(145deg, #FFB6C1, #FF69B4);
+    color: #8B0000;
+}
+.tone-btn:nth-child(2) { 
+    background: linear-gradient(145deg, #FFD700, #FFA500);
+    color: #8B4513;
+}
+.tone-btn:nth-child(3) { 
+    background: linear-gradient(145deg, #98FB98, #32CD32);
+    color: #006400;
+}
+.tone-btn:nth-child(4) { 
+    background: linear-gradient(145deg, #87CEEB, #4169E1);
+    color: #00008B;
+}
+
+.tone-btn:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.tone-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* 常用词按钮 */
+.word-btn {
+    background: linear-gradient(145deg, 
+        rgba(255, 182, 193, 0.9),
+        rgba(255, 105, 180, 0.9)
+    );
+    border: none;
+    border-radius: 20px;
+    padding: 20px 15px;
+    font-size: 1.3em;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 16px rgba(255, 105, 180, 0.2);
+}
+
+.word-btn:hover {
+    transform: translateY(-5px) rotate(3deg);
+    box-shadow: 0 12px 24px rgba(255, 105, 180, 0.3);
+}
+
+.words-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* 录音区域 */
+.record-section {
+    background: linear-gradient(145deg, 
+        rgba(135, 206, 235, 0.3),
+        rgba(70, 130, 180, 0.3)
+    );
+    border-radius: 30px;
+    padding: 30px;
+    margin: 30px 0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.waveform {
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.wave-bar {
+    position: absolute;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(to top, 
+        var(--sky-star),
+        var(--sky-sunset)
+    );
+    border-radius: 3px;
+    animation: wave 1.5s infinite ease-in-out;
+}
+
+@keyframes wave {
+    0%, 100% { height: 30%; }
+    50% { height: 90%; }
+}
+
+/* 页脚 */
+.sky-footer {
+    text-align: center;
+    padding: 30px;
+    margin-top: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.footer-text {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .sky-title {
+        font-size: 2.5em;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .pinyin-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+    
+    .tone-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .control-buttons {
+        flex-direction: column;
+    }
+    
+    .sky-control-btn {
+        width: 100%;
+    }
+}
+
+/* 特别效果：光遇蜡烛 */
+.candle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 60px;
+    background: linear-gradient(to bottom, 
+        #8B4513 0%,
+        #A0522D 30%,
+        #D2691E 100%
+    );
+    border-radius: 20px 20px 10px 10px;
+    z-index: 1000;
+    cursor: pointer;
+    animation: candleFloat 3s infinite ease-in-out;
+}
+
+.candle::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 30px;
+    background: linear-gradient(to bottom, 
+        #FFD700,
+        #FF8C00,
+        #FF4500
+    );
+    border-radius: 10px 10px 5px 5px;
+    animation: flame 1.5s infinite alternate;
+}
+
+@keyframes candleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes flame {
+    0%, 100% { 
+        height: 30px;
+        box-shadow: 0 0 20px #FFD700, 0 0 40px #FF8C00;
+    }
+    50% { 
+        height: 40px;
+        box-shadow: 0 0 30px #FFD700, 0 0 60px #FF8C00;
+    }
+}
