@@ -1,1 +1,1148 @@
-[粘贴上面的完整HTML代码]
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼音学习助手 - 互动音频版</title>
+    <link rel="stylesheet" href="css/audio-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📢</text></svg>">
+</head>
+<body>
+    <div class="audio-container">
+        <!-- 头部 -->
+        <header class="audio-header">
+            <h1 class="audio-title">
+                <i class="fas fa-volume-up"></i>
+                拼音学习助手
+                <i class="fas fa-headphones"></i>
+            </h1>
+            <p class="audio-subtitle">点击任意拼音即可听到标准发音 🔊 支持录音对比跟读</p>
+        </header>
+
+        <!-- 音频控制面板 -->
+        <section class="audio-control-panel">
+            <h2 class="control-title">
+                <i class="fas fa-sliders-h"></i>
+                音频控制中心
+            </h2>
+            
+            <div class="control-buttons">
+                <button class="control-btn" onclick="playAllShengmu()">
+                    <i class="fas fa-play-circle"></i>
+                    播放所有声母
+                </button>
+                <button class="control-btn" onclick="playTonePractice()">
+                    <i class="fas fa-music"></i>
+                    声调练习 (mā má mǎ mà)
+                </button>
+                <button class="control-btn" onclick="playRandomPinyin()">
+                    <i class="fas fa-random"></i>
+                    随机播放拼音
+                </button>
+                <button class="control-btn record" onclick="toggleRecording()" id="recordBtn">
+                    <i class="fas fa-microphone"></i>
+                    <span id="recordText">开始录音</span>
+                </button>
+                <button class="control-btn stop" onclick="stopAllAudio()">
+                    <i class="fas fa-stop-circle"></i>
+                    停止播放
+                </button>
+            </div>
+            
+            <div class="now-playing" id="nowPlaying">
+                <i class="fas fa-volume-up"></i> 准备播放拼音...
+            </div>
+            
+            <div class="audio-tip">
+                <i class="fas fa-lightbulb"></i> 
+                <strong>使用提示：</strong> 首次使用可能需要允许浏览器播放声音。建议使用 Chrome/Edge 浏览器获得最佳体验。
+            </div>
+        </section>
+
+        <!-- 声母发音区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-volume-up"></i>
+                声母发音 (21个)
+            </h2>
+            <p>点击下方声母按钮即可听到发音：</p>
+            <div class="pinyin-grid" id="shengmuGrid">
+                <!-- 动态生成声母按钮 -->
+            </div>
+        </section>
+
+        <!-- 韵母发音区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-music"></i>
+                韵母发音
+            </h2>
+            <p>点击下方韵母按钮即可听到发音：</p>
+            <div class="pinyin-grid" id="yunmuGrid">
+                <!-- 动态生成韵母按钮 -->
+            </div>
+        </section>
+
+        <!-- 声调练习区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                四声调练习
+            </h2>
+            <p>点击练习四个声调，体会声调变化：</p>
+            <div class="tone-buttons">
+                <button class="tone-btn" onclick="playPinyin('mā')">mā <br><small>第一声</small></button>
+                <button class="tone-btn" onclick="playPinyin('má')">má <br><small>第二声</small></button>
+                <button class="tone-btn" onclick="playPinyin('mǎ')">mǎ <br><small>第三声</small></button>
+                <button class="tone-btn" onclick="playPinyin('mà')">mà <br><small>第四声</small></button>
+            </div>
+        </section>
+
+        <!-- 常用词发音 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-comments"></i>
+                常用词发音
+            </h2>
+            <p>点击学习常用汉语词汇的发音：</p>
+            <div class="words-grid">
+                <button class="word-btn" onclick="playWord('你好')">你好</button>
+                <button class="word-btn" onclick="playWord('谢谢')">谢谢</button>
+                <button class="word-btn" onclick="playWord('再见')">再见</button>
+                <button class="word-btn" onclick="playWord('我爱你')">我爱你</button>
+                <button class="word-btn" onclick="playWord('早上好')">早上好</button>
+                <button class="word-btn" onclick="playWord('对不起')">对不起</button>
+                <button class="word-btn" onclick="playWord('没关系')">没关系</button>
+                <button class="word-btn" onclick="playWord('老师好')">老师好</button>
+            </div>
+        </section>
+
+        <!-- 录音对比区 -->
+        <section class="record-section">
+            <h2 class="section-title">
+                <i class="fas fa-microphone-alt"></i>
+                录音跟读练习
+            </h2>
+            <p>点击"开始录音"按钮，跟读拼音，然后播放对比您的发音：</p>
+            
+            <div class="waveform" id="waveform">
+                <!-- 动态生成波形 -->
+            </div>
+            
+            <div id="recordStatus" style="text-align: center; margin: 15px 0; color: var(--primary-audio);">
+                <i class="fas fa-info-circle"></i> 准备录音...
+            </div>
+            
+            <audio id="userRecording" controls style="width: 100%; margin-top: 10px;"></audio>
+            
+            <div class="audio-tip">
+                <i class="fas fa-graduation-cap"></i>
+                <strong>学习建议：</strong> 先听标准发音，然后录音跟读，对比改进。每天练习10分钟效果最佳！
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="audio-footer">
+            <p>🎯 拼音学习助手 - 互动音频版 v1.0</p>
+            <p>📞 技术支持：浏览器语音合成(TTS) | 🎵 所有发音均为实时生成</p>
+            <p>⭐ 提示：如果听不到声音，请检查浏览器设置并允许播放声音</p>
+        </footer>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="js/audio-manager.js"></script>
+    <script>
+        // ==================== 初始化拼音数据 ====================
+        const pinyinData = {
+            shengmu: [
+                'b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 
+                'g', 'k', 'h', 'j', 'q', 'x', 
+                'zh', 'ch', 'sh', 'r', 'z', 'c', 's'
+            ],
+            yunmu: [
+                'a', 'o', 'e', 'i', 'u', 'ü', 
+                'ai', 'ei', 'ao', 'ou', 
+                'an', 'en', 'in', 'un', 'ün',
+                'ang', 'eng', 'ing', 'ong'
+            ]
+        };
+
+        // ==================== 初始化页面 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            initPinyinButtons();
+            initWaveform();
+            initSpeechSynthesis();
+            
+            // 显示欢迎提示
+            setTimeout(() => {
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<i class="fas fa-hand-pointer"></i> 点击上方任意拼音开始学习！';
+            }, 1000);
+        });
+
+        // 初始化拼音按钮
+        function initPinyinButtons() {
+            // 生成声母按钮
+            const shengmuGrid = document.getElementById('shengmuGrid');
+            shengmuGrid.innerHTML = pinyinData.shengmu.map(pinyin => `
+                <button class="pinyin-btn" onclick="playPinyin('${pinyin}')">
+                    ${pinyin}
+                </button>
+            `).join('');
+            
+            // 生成韵母按钮
+            const yunmuGrid = document.getElementById('yunmuGrid');
+            yunmuGrid.innerHTML = pinyinData.yunmu.map(pinyin => `
+                <button class="pinyin-btn" onclick="playPinyin('${pinyin}')">
+                    ${pinyin}
+                </button>
+            `).join('');
+        }
+
+        // 初始化波形图
+        function initWaveform() {
+            const waveform = document.getElementById('waveform');
+            for (let i = 0; i < 40; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'wave-bar';
+                bar.style.left = `${i * 2.5}%`;
+                bar.style.animationDelay = `${i * 0.05}s`;
+                waveform.appendChild(bar);
+            }
+        }
+
+        // 初始化语音合成
+        function initSpeechSynthesis() {
+            if ('speechSynthesis' in window) {
+                // 预加载语音
+                speechSynthesis.getVoices();
+                console.log('语音合成已就绪');
+            } else {
+                console.warn('当前浏览器不支持语音合成');
+                document.querySelector('.audio-tip').innerHTML += 
+                    '<br><strong style="color: red;">⚠️ 当前浏览器不支持语音合成，请使用 Chrome 或 Edge 浏览器。</strong>';
+            }
+        }
+
+        // ==================== 音频控制函数 ====================
+        function playPinyin(pinyin) {
+            if (window.audioManager) {
+                window.audioManager.playPinyin(pinyin);
+            }
+        }
+
+        function playWord(word) {
+            playPinyin(word);
+        }
+
+        function playAllShengmu() {
+            if (window.audioManager) {
+                window.audioManager.playAllShengmu();
+            }
+        }
+
+        function playTonePractice() {
+            if (window.audioManager) {
+                window.audioManager.playTonePractice();
+            }
+        }
+
+        function playRandomPinyin() {
+            const allPinyin = [...pinyinData.shengmu, ...pinyinData.yunmu, 'mā', 'má', 'mǎ', 'mà'];
+            const randomPinyin = allPinyin[Math.floor(Math.random() * allPinyin.length)];
+            playPinyin(randomPinyin);
+        }
+
+        function stopAllAudio() {
+            if (window.audioManager) {
+                window.audioManager.stopCurrent();
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<i class="fas fa-stop-circle"></i> 已停止所有播放';
+            }
+        }
+
+        // ==================== 录音功能 ====================
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+
+        async function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            const text = document.getElementById('recordText');
+            const status = document.getElementById('recordStatus');
+            
+            if (!isRecording) {
+                // 开始录音
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
+                        }
+                    });
+                    
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audioElement = document.getElementById('userRecording');
+                        
+                        audioElement.src = audioUrl;
+                        audioElement.style.display = 'block';
+                        
+                        // 停止所有音频流
+                        stream.getTracks().forEach(track => track.stop());
+                        
+                        status.innerHTML = '<i class="fas fa-check-circle"></i> 录音完成！点击播放按钮收听您的录音';
+                        status.style.color = 'var(--success-audio)';
+                    };
+                    
+                    mediaRecorder.onerror = (event) => {
+                        console.error('录音错误:', event);
+                        status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 录音失败，请重试';
+                        status.style.color = 'var(--danger-audio)';
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    // 更新UI
+                    btn.innerHTML = '<i class="fas fa-stop-circle"></i> 停止录音';
+                    text.textContent = '停止录音';
+                    btn.classList.add('stop');
+                    status.innerHTML = '<i class="fas fa-circle" style="color: red; animation: blink 1s infinite;"></i> 正在录音...';
+                    status.style.color = 'var(--danger-audio)';
+                    
+                    // 添加闪烁动画
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes blink {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: 0.5; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                } catch (err) {
+                    console.error('录音失败:', err);
+                    status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> 无法访问麦克风: ${err.message}`;
+                    status.style.color = 'var(--danger-audio)';
+                    
+                    // 回退到提示
+                    alert('无法访问麦克风，请确保已授予录音权限。\n\n您可以继续点击拼音进行听音学习。');
+                }
+            } else {
+                // 停止录音
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+                
+                isRecording = false;
+                btn.innerHTML = '<i class="fas fa-microphone"></i> 开始录音';
+                text.textContent = '开始录音';
+                btn.classList.remove('stop');
+            }
+        }
+
+        // ==================== 键盘快捷键 ====================
+        document.addEventListener('keydown', function(event) {
+            // 空格键停止播放
+            if (event.code === 'Space') {
+                event.preventDefault();
+                stopAllAudio();
+            }
+            // ESC键停止录音
+            if (event.code === 'Escape' && isRecording) {
+                toggleRecording();
+            }
+            // R键随机播放
+            if (event.code === 'KeyR' && event.ctrlKey) {
+                playRandomPinyin();
+            }
+        });
+
+        // ==================== 服务Worker（增强体验） ====================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.log('Service Worker 注册失败:', err);
+            });
+        }
+    </script>
+</body>
+</html>
+EOFcat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼音学习助手 - 互动音频版</title>
+    <link rel="stylesheet" href="css/audio-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📢</text></svg>">
+</head>
+<body>
+    <div class="audio-container">
+        <!-- 头部 -->
+        <header class="audio-header">
+            <h1 class="audio-title">
+                <i class="fas fa-volume-up"></i>
+                拼音学习助手
+                <i class="fas fa-headphones"></i>
+            </h1>
+            <p class="audio-subtitle">点击任意拼音即可听到标准发音 🔊 支持录音对比跟读</p>
+        </header>
+
+        <!-- 音频控制面板 -->
+        <section class="audio-control-panel">
+            <h2 class="control-title">
+                <i class="fas fa-sliders-h"></i>
+                音频控制中心
+            </h2>
+            
+            <div class="control-buttons">
+                <button class="control-btn" onclick="playAllShengmu()">
+                    <i class="fas fa-play-circle"></i>
+                    播放所有声母
+                </button>
+                <button class="control-btn" onclick="playTonePractice()">
+                    <i class="fas fa-music"></i>
+                    声调练习 (mā má mǎ mà)
+                </button>
+                <button class="control-btn" onclick="playRandomPinyin()">
+                    <i class="fas fa-random"></i>
+                    随机播放拼音
+                </button>
+                <button class="control-btn record" onclick="toggleRecording()" id="recordBtn">
+                    <i class="fas fa-microphone"></i>
+                    <span id="recordText">开始录音</span>
+                </button>
+                <button class="control-btn stop" onclick="stopAllAudio()">
+                    <i class="fas fa-stop-circle"></i>
+                    停止播放
+                </button>
+            </div>
+            
+            <div class="now-playing" id="nowPlaying">
+                <i class="fas fa-volume-up"></i> 准备播放拼音...
+            </div>
+            
+            <div class="audio-tip">
+                <i class="fas fa-lightbulb"></i> 
+                <strong>使用提示：</strong> 首次使用可能需要允许浏览器播放声音。建议使用 Chrome/Edge 浏览器获得最佳体验。
+            </div>
+        </section>
+
+        <!-- 声母发音区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-volume-up"></i>
+                声母发音 (21个)
+            </h2>
+            <p>点击下方声母按钮即可听到发音：</p>
+            <div class="pinyin-grid" id="shengmuGrid">
+                <!-- 动态生成声母按钮 -->
+            </div>
+        </section>
+
+        <!-- 韵母发音区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-music"></i>
+                韵母发音
+            </h2>
+            <p>点击下方韵母按钮即可听到发音：</p>
+            <div class="pinyin-grid" id="yunmuGrid">
+                <!-- 动态生成韵母按钮 -->
+            </div>
+        </section>
+
+        <!-- 声调练习区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                四声调练习
+            </h2>
+            <p>点击练习四个声调，体会声调变化：</p>
+            <div class="tone-buttons">
+                <button class="tone-btn" onclick="playPinyin('mā')">mā <br><small>第一声</small></button>
+                <button class="tone-btn" onclick="playPinyin('má')">má <br><small>第二声</small></button>
+                <button class="tone-btn" onclick="playPinyin('mǎ')">mǎ <br><small>第三声</small></button>
+                <button class="tone-btn" onclick="playPinyin('mà')">mà <br><small>第四声</small></button>
+            </div>
+        </section>
+
+        <!-- 常用词发音 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-comments"></i>
+                常用词发音
+            </h2>
+            <p>点击学习常用汉语词汇的发音：</p>
+            <div class="words-grid">
+                <button class="word-btn" onclick="playWord('你好')">你好</button>
+                <button class="word-btn" onclick="playWord('谢谢')">谢谢</button>
+                <button class="word-btn" onclick="playWord('再见')">再见</button>
+                <button class="word-btn" onclick="playWord('我爱你')">我爱你</button>
+                <button class="word-btn" onclick="playWord('早上好')">早上好</button>
+                <button class="word-btn" onclick="playWord('对不起')">对不起</button>
+                <button class="word-btn" onclick="playWord('没关系')">没关系</button>
+                <button class="word-btn" onclick="playWord('老师好')">老师好</button>
+            </div>
+        </section>
+
+        <!-- 录音对比区 -->
+        <section class="record-section">
+            <h2 class="section-title">
+                <i class="fas fa-microphone-alt"></i>
+                录音跟读练习
+            </h2>
+            <p>点击"开始录音"按钮，跟读拼音，然后播放对比您的发音：</p>
+            
+            <div class="waveform" id="waveform">
+                <!-- 动态生成波形 -->
+            </div>
+            
+            <div id="recordStatus" style="text-align: center; margin: 15px 0; color: var(--primary-audio);">
+                <i class="fas fa-info-circle"></i> 准备录音...
+            </div>
+            
+            <audio id="userRecording" controls style="width: 100%; margin-top: 10px;"></audio>
+            
+            <div class="audio-tip">
+                <i class="fas fa-graduation-cap"></i>
+                <strong>学习建议：</strong> 先听标准发音，然后录音跟读，对比改进。每天练习10分钟效果最佳！
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="audio-footer">
+            <p>🎯 拼音学习助手 - 互动音频版 v1.0</p>
+            <p>📞 技术支持：浏览器语音合成(TTS) | 🎵 所有发音均为实时生成</p>
+            <p>⭐ 提示：如果听不到声音，请检查浏览器设置并允许播放声音</p>
+        </footer>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="js/audio-manager.js"></script>
+    <script>
+        // ==================== 初始化拼音数据 ====================
+        const pinyinData = {
+            shengmu: [
+                'b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 
+                'g', 'k', 'h', 'j', 'q', 'x', 
+                'zh', 'ch', 'sh', 'r', 'z', 'c', 's'
+            ],
+            yunmu: [
+                'a', 'o', 'e', 'i', 'u', 'ü', 
+                'ai', 'ei', 'ao', 'ou', 
+                'an', 'en', 'in', 'un', 'ün',
+                'ang', 'eng', 'ing', 'ong'
+            ]
+        };
+
+        // ==================== 初始化页面 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            initPinyinButtons();
+            initWaveform();
+            initSpeechSynthesis();
+            
+            // 显示欢迎提示
+            setTimeout(() => {
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<i class="fas fa-hand-pointer"></i> 点击上方任意拼音开始学习！';
+            }, 1000);
+        });
+
+        // 初始化拼音按钮
+        function initPinyinButtons() {
+            // 生成声母按钮
+            const shengmuGrid = document.getElementById('shengmuGrid');
+            shengmuGrid.innerHTML = pinyinData.shengmu.map(pinyin => `
+                <button class="pinyin-btn" onclick="playPinyin('${pinyin}')">
+                    ${pinyin}
+                </button>
+            `).join('');
+            
+            // 生成韵母按钮
+            const yunmuGrid = document.getElementById('yunmuGrid');
+            yunmuGrid.innerHTML = pinyinData.yunmu.map(pinyin => `
+                <button class="pinyin-btn" onclick="playPinyin('${pinyin}')">
+                    ${pinyin}
+                </button>
+            `).join('');
+        }
+
+        // 初始化波形图
+        function initWaveform() {
+            const waveform = document.getElementById('waveform');
+            for (let i = 0; i < 40; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'wave-bar';
+                bar.style.left = `${i * 2.5}%`;
+                bar.style.animationDelay = `${i * 0.05}s`;
+                waveform.appendChild(bar);
+            }
+        }
+
+        // 初始化语音合成
+        function initSpeechSynthesis() {
+            if ('speechSynthesis' in window) {
+                // 预加载语音
+                speechSynthesis.getVoices();
+                console.log('语音合成已就绪');
+            } else {
+                console.warn('当前浏览器不支持语音合成');
+                document.querySelector('.audio-tip').innerHTML += 
+                    '<br><strong style="color: red;">⚠️ 当前浏览器不支持语音合成，请使用 Chrome 或 Edge 浏览器。</strong>';
+            }
+        }
+
+        // ==================== 音频控制函数 ====================
+        function playPinyin(pinyin) {
+            if (window.audioManager) {
+                window.audioManager.playPinyin(pinyin);
+            }
+        }
+
+        function playWord(word) {
+            playPinyin(word);
+        }
+
+        function playAllShengmu() {
+            if (window.audioManager) {
+                window.audioManager.playAllShengmu();
+            }
+        }
+
+        function playTonePractice() {
+            if (window.audioManager) {
+                window.audioManager.playTonePractice();
+            }
+        }
+
+        function playRandomPinyin() {
+            const allPinyin = [...pinyinData.shengmu, ...pinyinData.yunmu, 'mā', 'má', 'mǎ', 'mà'];
+            const randomPinyin = allPinyin[Math.floor(Math.random() * allPinyin.length)];
+            playPinyin(randomPinyin);
+        }
+
+        function stopAllAudio() {
+            if (window.audioManager) {
+                window.audioManager.stopCurrent();
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<i class="fas fa-stop-circle"></i> 已停止所有播放';
+            }
+        }
+
+        // ==================== 录音功能 ====================
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+
+        async function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            const text = document.getElementById('recordText');
+            const status = document.getElementById('recordStatus');
+            
+            if (!isRecording) {
+                // 开始录音
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
+                        }
+                    });
+                    
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audioElement = document.getElementById('userRecording');
+                        
+                        audioElement.src = audioUrl;
+                        audioElement.style.display = 'block';
+                        
+                        // 停止所有音频流
+                        stream.getTracks().forEach(track => track.stop());
+                        
+                        status.innerHTML = '<i class="fas fa-check-circle"></i> 录音完成！点击播放按钮收听您的录音';
+                        status.style.color = 'var(--success-audio)';
+                    };
+                    
+                    mediaRecorder.onerror = (event) => {
+                        console.error('录音错误:', event);
+                        status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 录音失败，请重试';
+                        status.style.color = 'var(--danger-audio)';
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    // 更新UI
+                    btn.innerHTML = '<i class="fas fa-stop-circle"></i> 停止录音';
+                    text.textContent = '停止录音';
+                    btn.classList.add('stop');
+                    status.innerHTML = '<i class="fas fa-circle" style="color: red; animation: blink 1s infinite;"></i> 正在录音...';
+                    status.style.color = 'var(--danger-audio)';
+                    
+                    // 添加闪烁动画
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes blink {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: 0.5; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                } catch (err) {
+                    console.error('录音失败:', err);
+                    status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> 无法访问麦克风: ${err.message}`;
+                    status.style.color = 'var(--danger-audio)';
+                    
+                    // 回退到提示
+                    alert('无法访问麦克风，请确保已授予录音权限。\n\n您可以继续点击拼音进行听音学习。');
+                }
+            } else {
+                // 停止录音
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+                
+                isRecording = false;
+                btn.innerHTML = '<i class="fas fa-microphone"></i> 开始录音';
+                text.textContent = '开始录音';
+                btn.classList.remove('stop');
+            }
+        }
+
+        // ==================== 键盘快捷键 ====================
+        document.addEventListener('keydown', function(event) {
+            // 空格键停止播放
+            if (event.code === 'Space') {
+                event.preventDefault();
+                stopAllAudio();
+            }
+            // ESC键停止录音
+            if (event.code === 'Escape' && isRecording) {
+                toggleRecording();
+            }
+            // R键随机播放
+            if (event.code === 'KeyR' && event.ctrlKey) {
+                playRandomPinyin();
+            }
+        });
+
+        // ==================== 服务Worker（增强体验） ====================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.log('Service Worker 注册失败:', err);
+            });
+        }
+    </script>
+</body>
+</html>
+EOFcat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼音学习助手 - 互动音频版</title>
+    <link rel="stylesheet" href="css/audio-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📢</text></svg>">
+</head>
+<body>
+    <div class="audio-container">
+        <!-- 头部 -->
+        <header class="audio-header">
+            <h1 class="audio-title">
+                <i class="fas fa-volume-up"></i>
+                拼音学习助手
+                <i class="fas fa-headphones"></i>
+            </h1>
+            <p class="audio-subtitle">点击任意拼音即可听到标准发音 🔊 支持录音对比跟读</p>
+        </header>
+
+        <!-- 音频控制面板 -->
+        <section class="audio-control-panel">
+            <h2 class="control-title">
+                <i class="fas fa-sliders-h"></i>
+                音频控制中心
+            </h2>
+            
+            <div class="control-buttons">
+                <button class="control-btn" onclick="playAllShengmu()">
+                    <i class="fas fa-play-circle"></i>
+                    播放所有声母
+                </button>
+                <button class="control-btn" onclick="playTonePractice()">
+                    <i class="fas fa-music"></i>
+                    声调练习 (mā má mǎ mà)
+                </button>
+                <button class="control-btn" onclick="playRandomPinyin()">
+                    <i class="fas fa-random"></i>
+                    随机播放拼音
+                </button>
+                <button class="control-btn record" onclick="toggleRecording()" id="recordBtn">
+                    <i class="fas fa-microphone"></i>
+                    <span id="recordText">开始录音</span>
+                </button>
+                <button class="control-btn stop" onclick="stopAllAudio()">
+                    <i class="fas fa-stop-circle"></i>
+                    停止播放
+                </button>
+            </div>
+            
+            <div class="now-playing" id="nowPlaying">
+                <i class="fas fa-volume-up"></i> 准备播放拼音...
+            </div>
+            
+            <div class="audio-tip">
+                <i class="fas fa-lightbulb"></i> 
+                <strong>使用提示：</strong> 首次使用可能需要允许浏览器播放声音。建议使用 Chrome/Edge 浏览器获得最佳体验。
+            </div>
+        </section>
+
+        <!-- 声母发音区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-volume-up"></i>
+                声母发音 (21个)
+            </h2>
+            <p>点击下方声母按钮即可听到发音：</p>
+            <div class="pinyin-grid" id="shengmuGrid">
+                <!-- 动态生成声母按钮 -->
+            </div>
+        </section>
+
+        <!-- 韵母发音区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-music"></i>
+                韵母发音
+            </h2>
+            <p>点击下方韵母按钮即可听到发音：</p>
+            <div class="pinyin-grid" id="yunmuGrid">
+                <!-- 动态生成韵母按钮 -->
+            </div>
+        </section>
+
+        <!-- 声调练习区 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                四声调练习
+            </h2>
+            <p>点击练习四个声调，体会声调变化：</p>
+            <div class="tone-buttons">
+                <button class="tone-btn" onclick="playPinyin('mā')">mā <br><small>第一声</small></button>
+                <button class="tone-btn" onclick="playPinyin('má')">má <br><small>第二声</small></button>
+                <button class="tone-btn" onclick="playPinyin('mǎ')">mǎ <br><small>第三声</small></button>
+                <button class="tone-btn" onclick="playPinyin('mà')">mà <br><small>第四声</small></button>
+            </div>
+        </section>
+
+        <!-- 常用词发音 -->
+        <section class="pinyin-section">
+            <h2 class="section-title">
+                <i class="fas fa-comments"></i>
+                常用词发音
+            </h2>
+            <p>点击学习常用汉语词汇的发音：</p>
+            <div class="words-grid">
+                <button class="word-btn" onclick="playWord('你好')">你好</button>
+                <button class="word-btn" onclick="playWord('谢谢')">谢谢</button>
+                <button class="word-btn" onclick="playWord('再见')">再见</button>
+                <button class="word-btn" onclick="playWord('我爱你')">我爱你</button>
+                <button class="word-btn" onclick="playWord('早上好')">早上好</button>
+                <button class="word-btn" onclick="playWord('对不起')">对不起</button>
+                <button class="word-btn" onclick="playWord('没关系')">没关系</button>
+                <button class="word-btn" onclick="playWord('老师好')">老师好</button>
+            </div>
+        </section>
+
+        <!-- 录音对比区 -->
+        <section class="record-section">
+            <h2 class="section-title">
+                <i class="fas fa-microphone-alt"></i>
+                录音跟读练习
+            </h2>
+            <p>点击"开始录音"按钮，跟读拼音，然后播放对比您的发音：</p>
+            
+            <div class="waveform" id="waveform">
+                <!-- 动态生成波形 -->
+            </div>
+            
+            <div id="recordStatus" style="text-align: center; margin: 15px 0; color: var(--primary-audio);">
+                <i class="fas fa-info-circle"></i> 准备录音...
+            </div>
+            
+            <audio id="userRecording" controls style="width: 100%; margin-top: 10px;"></audio>
+            
+            <div class="audio-tip">
+                <i class="fas fa-graduation-cap"></i>
+                <strong>学习建议：</strong> 先听标准发音，然后录音跟读，对比改进。每天练习10分钟效果最佳！
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="audio-footer">
+            <p>🎯 拼音学习助手 - 互动音频版 v1.0</p>
+            <p>📞 技术支持：浏览器语音合成(TTS) | 🎵 所有发音均为实时生成</p>
+            <p>⭐ 提示：如果听不到声音，请检查浏览器设置并允许播放声音</p>
+        </footer>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="js/audio-manager.js"></script>
+    <script>
+        // ==================== 初始化拼音数据 ====================
+        const pinyinData = {
+            shengmu: [
+                'b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 
+                'g', 'k', 'h', 'j', 'q', 'x', 
+                'zh', 'ch', 'sh', 'r', 'z', 'c', 's'
+            ],
+            yunmu: [
+                'a', 'o', 'e', 'i', 'u', 'ü', 
+                'ai', 'ei', 'ao', 'ou', 
+                'an', 'en', 'in', 'un', 'ün',
+                'ang', 'eng', 'ing', 'ong'
+            ]
+        };
+
+        // ==================== 初始化页面 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            initPinyinButtons();
+            initWaveform();
+            initSpeechSynthesis();
+            
+            // 显示欢迎提示
+            setTimeout(() => {
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<i class="fas fa-hand-pointer"></i> 点击上方任意拼音开始学习！';
+            }, 1000);
+        });
+
+        // 初始化拼音按钮
+        function initPinyinButtons() {
+            // 生成声母按钮
+            const shengmuGrid = document.getElementById('shengmuGrid');
+            shengmuGrid.innerHTML = pinyinData.shengmu.map(pinyin => `
+                <button class="pinyin-btn" onclick="playPinyin('${pinyin}')">
+                    ${pinyin}
+                </button>
+            `).join('');
+            
+            // 生成韵母按钮
+            const yunmuGrid = document.getElementById('yunmuGrid');
+            yunmuGrid.innerHTML = pinyinData.yunmu.map(pinyin => `
+                <button class="pinyin-btn" onclick="playPinyin('${pinyin}')">
+                    ${pinyin}
+                </button>
+            `).join('');
+        }
+
+        // 初始化波形图
+        function initWaveform() {
+            const waveform = document.getElementById('waveform');
+            for (let i = 0; i < 40; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'wave-bar';
+                bar.style.left = `${i * 2.5}%`;
+                bar.style.animationDelay = `${i * 0.05}s`;
+                waveform.appendChild(bar);
+            }
+        }
+
+        // 初始化语音合成
+        function initSpeechSynthesis() {
+            if ('speechSynthesis' in window) {
+                // 预加载语音
+                speechSynthesis.getVoices();
+                console.log('语音合成已就绪');
+            } else {
+                console.warn('当前浏览器不支持语音合成');
+                document.querySelector('.audio-tip').innerHTML += 
+                    '<br><strong style="color: red;">⚠️ 当前浏览器不支持语音合成，请使用 Chrome 或 Edge 浏览器。</strong>';
+            }
+        }
+
+        // ==================== 音频控制函数 ====================
+        function playPinyin(pinyin) {
+            if (window.audioManager) {
+                window.audioManager.playPinyin(pinyin);
+            }
+        }
+
+        function playWord(word) {
+            playPinyin(word);
+        }
+
+        function playAllShengmu() {
+            if (window.audioManager) {
+                window.audioManager.playAllShengmu();
+            }
+        }
+
+        function playTonePractice() {
+            if (window.audioManager) {
+                window.audioManager.playTonePractice();
+            }
+        }
+
+        function playRandomPinyin() {
+            const allPinyin = [...pinyinData.shengmu, ...pinyinData.yunmu, 'mā', 'má', 'mǎ', 'mà'];
+            const randomPinyin = allPinyin[Math.floor(Math.random() * allPinyin.length)];
+            playPinyin(randomPinyin);
+        }
+
+        function stopAllAudio() {
+            if (window.audioManager) {
+                window.audioManager.stopCurrent();
+                document.getElementById('nowPlaying').innerHTML = 
+                    '<i class="fas fa-stop-circle"></i> 已停止所有播放';
+            }
+        }
+
+        // ==================== 录音功能 ====================
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+
+        async function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            const text = document.getElementById('recordText');
+            const status = document.getElementById('recordStatus');
+            
+            if (!isRecording) {
+                // 开始录音
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
+                        }
+                    });
+                    
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audioElement = document.getElementById('userRecording');
+                        
+                        audioElement.src = audioUrl;
+                        audioElement.style.display = 'block';
+                        
+                        // 停止所有音频流
+                        stream.getTracks().forEach(track => track.stop());
+                        
+                        status.innerHTML = '<i class="fas fa-check-circle"></i> 录音完成！点击播放按钮收听您的录音';
+                        status.style.color = 'var(--success-audio)';
+                    };
+                    
+                    mediaRecorder.onerror = (event) => {
+                        console.error('录音错误:', event);
+                        status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 录音失败，请重试';
+                        status.style.color = 'var(--danger-audio)';
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    // 更新UI
+                    btn.innerHTML = '<i class="fas fa-stop-circle"></i> 停止录音';
+                    text.textContent = '停止录音';
+                    btn.classList.add('stop');
+                    status.innerHTML = '<i class="fas fa-circle" style="color: red; animation: blink 1s infinite;"></i> 正在录音...';
+                    status.style.color = 'var(--danger-audio)';
+                    
+                    // 添加闪烁动画
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes blink {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: 0.5; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                } catch (err) {
+                    console.error('录音失败:', err);
+                    status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> 无法访问麦克风: ${err.message}`;
+                    status.style.color = 'var(--danger-audio)';
+                    
+                    // 回退到提示
+                    alert('无法访问麦克风，请确保已授予录音权限。\n\n您可以继续点击拼音进行听音学习。');
+                }
+            } else {
+                // 停止录音
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+                
+                isRecording = false;
+                btn.innerHTML = '<i class="fas fa-microphone"></i> 开始录音';
+                text.textContent = '开始录音';
+                btn.classList.remove('stop');
+            }
+        }
+
+        // ==================== 键盘快捷键 ====================
+        document.addEventListener('keydown', function(event) {
+            // 空格键停止播放
+            if (event.code === 'Space') {
+                event.preventDefault();
+                stopAllAudio();
+            }
+            // ESC键停止录音
+            if (event.code === 'Escape' && isRecording) {
+                toggleRecording();
+            }
+            // R键随机播放
+            if (event.code === 'KeyR' && event.ctrlKey) {
+                playRandomPinyin();
+            }
+        });
+
+        // ==================== 服务Worker（增强体验） ====================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.log('Service Worker 注册失败:', err);
+            });
+        }
+    </script>
+</body>
+</html>

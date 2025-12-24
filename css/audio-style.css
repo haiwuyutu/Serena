@@ -1,0 +1,323 @@
+/* ==================== 音频版样式 ==================== */
+:root {
+    --primary-audio: #4361ee;
+    --secondary-audio: #3a0ca3;
+    --accent-audio: #4cc9f0;
+    --success-audio: #4ade80;
+    --warning-audio: #fbbf24;
+    --danger-audio: #f87171;
+}
+
+body {
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/* 容器 */
+.audio-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 标题 */
+.audio-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(67, 97, 238, 0.1);
+}
+
+.audio-title {
+    color: var(--primary-audio);
+    font-size: 2.8em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.audio-subtitle {
+    color: var(--secondary-audio);
+    font-size: 1.2em;
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+/* 音频控制面板 */
+.audio-control-panel {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: 3px solid var(--accent-audio);
+}
+
+.control-title {
+    color: var(--secondary-audio);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* 控制按钮 */
+.control-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.control-btn {
+    background: linear-gradient(135deg, var(--primary-audio), var(--secondary-audio));
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-size: 1.1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.control-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+.control-btn.stop {
+    background: linear-gradient(135deg, var(--danger-audio), #dc2626);
+}
+
+.control-btn.record {
+    background: linear-gradient(135deg, var(--success-audio), #16a34a);
+}
+
+/* 播放状态 */
+.now-playing {
+    text-align: center;
+    padding: 15px;
+    background: #f0f7ff;
+    border-radius: 15px;
+    margin-top: 15px;
+    font-size: 1.1em;
+    color: var(--primary-audio);
+    border: 2px dashed var(--accent-audio);
+}
+
+/* 拼音网格 */
+.pinyin-section {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+    color: var(--secondary-audio);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--accent-audio);
+}
+
+/* 拼音按钮 */
+.pinyin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.pinyin-btn {
+    background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+    border: none;
+    border-radius: 15px;
+    padding: 20px 10px;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--primary-audio);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.pinyin-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
+    box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+}
+
+.pinyin-btn.playing {
+    background: linear-gradient(135deg, var(--accent-audio), #3b82f6);
+    color: white;
+    animation: pulse 0.5s;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 声调按钮 */
+.tone-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.tone-btn {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: none;
+    border-radius: 15px;
+    padding: 25px 10px;
+    font-size: 2em;
+    font-weight: bold;
+    color: #92400e;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tone-btn:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, #fde68a, #fcd34d);
+}
+
+.tone-btn:nth-child(1) { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; }
+.tone-btn:nth-child(2) { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+.tone-btn:nth-child(3) { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+.tone-btn:nth-child(4) { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; }
+
+/* 常用词 */
+.words-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.word-btn {
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    border: none;
+    border-radius: 15px;
+    padding: 20px 10px;
+    font-size: 1.3em;
+    color: var(--secondary-audio);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.word-btn:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+}
+
+/* 录音区域 */
+.record-section {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 3px solid var(--accent-audio);
+}
+
+.waveform {
+    height: 80px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.wave-bar {
+    position: absolute;
+    bottom: 0;
+    width: 6px;
+    background: var(--primary-audio);
+    border-radius: 3px;
+    animation: wave 1.5s infinite ease-in-out;
+}
+
+@keyframes wave {
+    0%, 100% { height: 30%; }
+    50% { height: 90%; }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .pinyin-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+    
+    .tone-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .control-buttons {
+        flex-direction: column;
+    }
+    
+    .control-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* 发音时的特效 */
+body.speaking .audio-title {
+    animation: colorChange 2s infinite alternate;
+}
+
+@keyframes colorChange {
+    from { color: var(--primary-audio); }
+    to { color: var(--accent-audio); }
+}
+
+/* 底部信息 */
+.audio-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.audio-tip {
+    background: #fff3cd;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+    border-left: 5px solid #ffc107;
+}
