@@ -1,0 +1,722 @@
+// 音频管理器 - 处理所有发音功能
+class AudioManager {
+    constructor() {
+        this.audioContext = null;
+        this.isPlaying = false;
+        this.currentAudio = null;
+        this.volume = 0.7;
+        this.pinyinData = this.loadPinyinData();
+        this.init();
+    }
+
+    init() {
+        // 初始化音频上下文（兼容不同浏览器）
+        try {
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.audioContext = new AudioContext();
+        } catch (e) {
+            console.warn('Web Audio API 不支持，将使用TTS');
+        }
+    }
+
+    loadPinyinData() {
+        return {
+            shengmu: [
+                { char: 'b', audio: 'b' }, { char: 'p', audio: 'p' },
+                { char: 'm', audio: 'm' }, { char: 'f', audio: 'f' },
+                { char: 'd', audio: 'd' }, { char: 't', audio: 't' },
+                { char: 'n', audio: 'n' }, { char: 'l', audio: 'l' },
+                { char: 'g', audio: 'g' }, { char: 'k', audio: 'k' },
+                { char: 'h', audio: 'h' }, { char: 'j', audio: 'j' },
+                { char: 'q', audio: 'q' }, { char: 'x', audio: 'x' },
+                { char: 'zh', audio: 'zh' }, { char: 'ch', audio: 'ch' },
+                { char: 'sh', audio: 'sh' }, { char: 'r', audio: 'r' },
+                { char: 'z', audio: 'z' }, { char: 'c', audio: 'c' },
+                { char: 's', audio: 's' }, { char: 'y', audio: 'y' },
+                { char: 'w', audio: 'w' }
+            ],
+            yunmu: [
+                { char: 'a', audio: 'a' }, { char: 'o', audio: 'o' },
+                { char: 'e', audio: 'e' }, { char: 'i', audio: 'i' },
+                { char: 'u', audio: 'u' }, { char: 'ü', audio: 'v' },
+                { char: 'ai', audio: 'ai' }, { char: 'ei', audio: 'ei' },
+                { char: 'ui', audio: 'ui' }, { char: 'ao', audio: 'ao' },
+                { char: 'ou', audio: 'ou' }, { char: 'iu', audio: 'iu' },
+                { char: 'ie', audio: 'ie' }, { char: 'üe', audio: 've' },
+                { char: 'er', audio: 'er' }, { char: 'an', audio: 'an' },
+                { char: 'en', audio: 'en' }, { char: 'in', audio: 'in' },
+                { char: 'un', audio: 'un' }, { char: 'ün', audio: 'vn' },
+                { char: 'ang', audio: 'ang' }, { char: 'eng', audio: 'eng' },
+                { char: 'ing', audio: 'ing' }, { char: 'ong', audio: 'ong' }
+            ],
+            tones: [
+                { char: 'mā', audio: 'ma1' }, { char: 'má', audio: 'ma2' },
+                { char: 'mǎ', audio: 'ma3' }, { char: 'mà', audio: 'ma4' },
+                { char: 'bā', audio: 'ba1' }, { char: 'bá', audio: 'ba2' },
+                { char: 'bǎ', audio: 'ba3' }, { char: 'bà', audio: 'ba4' },
+                { char: 'fū', audio: 'fu1' }, { char: 'fú', audio: 'fu2' },
+                { char: 'fǔ', audio: 'fu3' }, { char: 'fù', audio: 'fu4' }
+            ]
+        };
+    }
+
+    // 播放拼音发音
+    playPinyin(pinyin) {
+        if (!pinyin) return;
+        
+        this.stopPlayback();
+        
+        // 如果是中文TTS
+        if ('speechSynthesis' in window) {
+            this.playWithTTS(pinyin);
+        } else {
+            this.playWithAudio(pinyin);
+        }
+    }
+
+    playWithTTS(pinyin) {
+        this.isPlaying = true;
+        this.updatePlayButton();
+        
+        const utterance = new SpeechSynthesisUtterance(pinyin);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.8;
+        utterance.pitch = 1;
+        utterance.volume = this.volume;
+        
+        utterance.onstart = () => {
+            this.startProgressAnimation();
+        };
+        
+        utterance.onend = () => {
+            this.isPlaying = false;
+            this.updatePlayButton();
+            this.resetProgress();
+        };
+        
+        utterance.onerror = (event) => {
+            console.error('TTS错误:', event);
+            this.isPlaying = false;
+            this.updatePlayButton();
+            this.resetProgress();
+            this.showAudioError();
+        };
+        
+        speechSynthesis.speak(utterance);
+        this.currentAudio = utterance;
+    }
+
+    playWithAudio(pinyin) {
+        // 这里可以添加自定义音频文件的播放逻辑
+        // 由于GitHub Pages不能上传音频文件，我们主要使用TTS
+        console.log('播放音频:', pinyin);
+        this.showAudioError();
+    }
+
+    // 录制用户音频
+    async recordAudio() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            this.showNotification('您的浏览器不支持录音功能', 'error');
+            return;
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.showNotification('录音开始，请跟读拼音...', 'info');
+            
+            // 这里可以添加录音处理逻辑
+            setTimeout(() => {
+                this.showNotification('录音完成！', 'success');
+                // 停止录音
+                stream.getTracks().forEach(track => track.stop());
+            }, 3000);
+            
+        } catch (error) {
+            console.error('录音错误:', error);
+            this.showNotification('无法访问麦克风', 'error');
+        }
+    }
+
+    // 控制方法
+    togglePlay() {
+        if (this.isPlaying) {
+            this.stopPlayback();
+        } else {
+            const currentPinyin = document.getElementById('currentPinyin').textContent;
+            if (currentPinyin && currentPinyin !== '点击生成拼音') {
+                this.playPinyin(currentPinyin);
+            } else {
+                this.showNotification('请先生成拼音', 'warning');
+            }
+        }
+    }
+
+    stopPlayback() {
+        if (this.currentAudio && 'cancel' in this.currentAudio) {
+            speechSynthesis.cancel();
+        }
+        this.isPlaying = false;
+        this.updatePlayButton();
+        this.resetProgress();
+    }
+
+    repeatPlay(times = 3) {
+        const currentPinyin = document.getElementById('currentPinyin').textContent;
+        if (!currentPinyin || currentPinyin === '点击生成拼音') {
+            this.showNotification('请先生成拼音', 'warning');
+            return;
+        }
+
+        let count = 0;
+        const playNext = () => {
+            if (count >= times) return;
+            
+            setTimeout(() => {
+                this.playPinyin(currentPinyin);
+                count++;
+                
+                if (count < times) {
+                    setTimeout(playNext, 1500);
+                }
+            }, 500);
+        };
+        
+        playNext();
+    }
+
+    // 工具方法
+    updatePlayButton() {
+        const playIcon = document.getElementById('playIcon');
+        const playText = document.getElementById('playText');
+        
+        if (this.isPlaying) {
+            playIcon.className = 'fas fa-pause';
+            playText.textContent = '暂停';
+        } else {
+            playIcon.className = 'fas fa-play';
+            playText.textContent = '播放';
+        }
+    }
+
+    startProgressAnimation() {
+        const progressBar = document.getElementById('audioProgress');
+        progressBar.style.width = '0%';
+        
+        let width = 0;
+        const interval = setInterval(() => {
+            if (width >= 100 || !this.isPlaying) {
+                clearInterval(interval);
+                return;
+            }
+            width += 1;
+            progressBar.style.width = width + '%';
+        }, 30);
+    }
+
+    resetProgress() {
+        document.getElementById('audioProgress').style.width = '0%';
+    }
+
+    changeVolume(value) {
+        this.volume = value / 100;
+        if (this.currentAudio && this.currentAudio.volume !== undefined) {
+            this.currentAudio.volume = this.volume;
+        }
+    }
+
+    // 显示通知
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            ${message}
+        `;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 10000;
+            animation: slideIn 0.3s, fadeOut 0.3s 2.7s;
+            border-left: 4px solid ${type === 'success' ? '#4CAF50' : type === 'error' ? '#F44336' : '#2196F3'};
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'fadeOut 0.3s';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    showAudioError() {
+        this.showNotification('音频播放失败，请检查浏览器设置或尝试其他拼音', 'error');
+    }
+}
+
+// 创建全局音频管理器实例
+const audioManager = new AudioManager();// 拼音游戏引擎
+class PinyinGame {
+    constructor() {
+        this.score = 0;
+        this.currentQuestion = 0;
+        this.totalQuestions = 10;
+        this.questions = this.generateQuestions();
+        this.stars = 0;
+        this.init();
+    }
+
+    init() {
+        this.updateDisplay();
+        this.loadQuestion();
+    }
+
+    generateQuestions() {
+        return [
+            {
+                type: 'tone',
+                question: "拼音 'mā' 是第几声？",
+                answer: "1",
+                options: ["1", "2", "3", "4"],
+                pinyin: "mā"
+            },
+            {
+                type: 'shengmu',
+                question: "哪个是声母？",
+                answer: "b",
+                options: ["a", "b", "i", "u"],
+                pinyin: "b"
+            },
+            {
+                type: 'yunmu',
+                question: "哪个是韵母？",
+                answer: "a",
+                options: ["b", "p", "a", "m"],
+                pinyin: "a"
+            },
+            {
+                type: 'match',
+                question: "声母 'b' 和韵母 'a' 组成什么？",
+                answer: "ba",
+                options: ["ba", "pa", "bi", "bo"],
+                pinyin: "ba"
+            },
+            {
+                type: 'tone',
+                question: "拼音 'mà' 是第几声？",
+                answer: "4",
+                options: ["1", "2", "3", "4"],
+                pinyin: "mà"
+            },
+            {
+                type: 'shengmu',
+                question: "下面哪个不是声母？",
+                answer: "e",
+                options: ["d", "t", "e", "n"],
+                pinyin: "e"
+            },
+            {
+                type: 'yunmu',
+                question: "韵母 'ang' 怎么读？",
+                answer: "ang",
+                options: ["an", "ang", "eng", "ong"],
+                pinyin: "ang"
+            },
+            {
+                type: 'match',
+                question: "'p' + 'o' 组成什么？",
+                answer: "po",
+                options: ["po", "bo", "pu", "pa"],
+                pinyin: "po"
+            },
+            {
+                type: 'tone',
+                question: "拼音 'mǎ' 是第几声？",
+                answer: "3",
+                options: ["1", "2", "3", "4"],
+                pinyin: "mǎ"
+            },
+            {
+                type: 'complete',
+                question: "声母 'g' + 韵母 'u' + 第3声 = ？",
+                answer: "gǔ",
+                options: ["gū", "gú", "gǔ", "gù"],
+                pinyin: "gǔ"
+            }
+        ];
+    }
+
+    loadQuestion() {
+        if (this.currentQuestion >= this.questions.length) {
+            this.endGame();
+            return;
+        }
+
+        const question = this.questions[this.currentQuestion];
+        document.getElementById('gameQuestion').innerHTML = `
+            <div style="margin-bottom: 20px;">${question.question}</div>
+            <div style="font-size: 2em; color: var(--dawn-gold);">${question.pinyin}</div>
+        `;
+
+        const optionsContainer = document.getElementById('gameOptions');
+        optionsContainer.innerHTML = '';
+        
+        question.options.forEach(option => {
+            const button = document.createElement('button');
+            button.className = 'option-btn';
+            button.innerHTML = option;
+            button.onclick = () => this.checkAnswer(option, question.answer);
+            optionsContainer.appendChild(button);
+        });
+
+        document.getElementById('nextBtn').disabled = true;
+        this.updateProgress();
+    }
+
+    checkAnswer(selected, correct) {
+        const buttons = document.querySelectorAll('.option-btn');
+        let isCorrect = false;
+
+        buttons.forEach(button => {
+            if (button.textContent === correct) {
+                button.classList.add('correct');
+                if (button.textContent === selected) {
+                    isCorrect = true;
+                }
+            }
+            if (button.textContent === selected && button.textContent !== correct) {
+                button.classList.add('wrong');
+            }
+            button.disabled = true;
+        });
+
+        if (isCorrect) {
+            this.score++;
+            this.stars += 10;
+            this.showNotification('🎉 回答正确！获得10颗星星', 'success');
+            audioManager.playPinyin(this.questions[this.currentQuestion].pinyin);
+        } else {
+            this.showNotification('正确答案是: ' + correct, 'error');
+        }
+
+        document.getElementById('nextBtn').disabled = false;
+        this.updateDisplay();
+    }
+
+    nextQuestion() {
+        this.currentQuestion++;
+        if (this.currentQuestion < this.questions.length) {
+            this.loadQuestion();
+        } else {
+            this.endGame();
+        }
+    }
+
+    endGame() {
+        const message = `
+            <div style="text-align: center; padding: 30px;">
+                <h3 style="color: var(--dawn-gold);">🎮 游戏完成！</h3>
+                <p>最终得分: <span style="font-size: 2em; color: var(--cloud-pink);">${this.score}/${this.totalQuestions}</span></p>
+                <p>获得星星: <span style="color: var(--dawn-gold);">${this.stars} ✨</span></p>
+                <button class="sky-btn" onclick="resetGame()" style="margin-top: 20px;">
+                    <i class="fas fa-redo"></i> 再玩一次
+                </button>
+            </div>
+        `;
+        
+        document.getElementById('gameQuestion').innerHTML = message;
+        document.getElementById('gameOptions').innerHTML = '';
+        document.getElementById('nextBtn').style.display = 'none';
+        
+        // 庆祝效果
+        this.celebrate();
+    }
+
+    celebrate() {
+        // 添加庆祝动画
+        for(let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const star = document.createElement('div');
+                star.innerHTML = '✨';
+                star.style.cssText = `
+                    position: fixed;
+                    font-size: 24px;
+                    left: ${Math.random() * 100}vw;
+                    top: -50px;
+                    animation: fall 3s linear forwards;
+                    z-index: 1000;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 3000);
+            }, i * 100);
+        }
+    }
+
+    resetGame() {
+        this.score = 0;
+        this.currentQuestion = 0;
+        this.stars = 0;
+        this.questions = this.generateQuestions();
+        document.getElementById('nextBtn').style.display = 'inline-block';
+        this.updateDisplay();
+        this.loadQuestion();
+    }
+
+    updateDisplay() {
+        document.getElementById('starCount').textContent = this.stars;
+        document.getElementById('progressText').textContent = 
+            `${this.currentQuestion + 1}/${this.totalQuestions}`;
+    }
+
+    updateProgress() {
+        const progress = ((this.currentQuestion + 1) / this.totalQuestions) * 100;
+        document.getElementById('gameProgress').style.width = progress + '%';
+    }
+
+    showNotification(message, type) {
+        // 复用音频管理器的通知系统
+        if (window.audioManager) {
+            audioManager.showNotification(message, type);
+        }
+    }
+}
+
+// 创建游戏实例
+let pinyinGame;
+
+function initGame() {
+    pinyinGame = new PinyinGame();
+}
+
+function resetGame() {
+    pinyinGame.resetGame();
+}
+
+function nextQuestion() {
+    pinyinGame.nextQuestion();
+}// 主控制脚本 - 整合所有功能
+
+// 初始化星光背景
+function initStars() {
+    const starsBg = document.getElementById('starsBg');
+    const starCount = 150;
+    
+    for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // 随机大小
+        const size = Math.random() * 3 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        
+        // 随机位置
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        
+        // 随机闪烁延迟
+        star.style.animationDelay = Math.random() * 4 + 's';
+        
+        starsBg.appendChild(star);
+    }
+}
+
+// 滚动到指定区域
+function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
+// 切换暗色模式
+function toggleDarkMode() {
+    const body = document.body;
+    const isDark = body.classList.toggle('dark-mode');
+    
+    const icon = document.querySelector('[onclick="toggleDarkMode()"] i');
+    icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    
+    showNotification(isDark ? '切换到光明模式' : '切换到星空模式', 'info');
+}
+
+// 学习部分
+function learnSection(type) {
+    let message = '';
+    let pinyin = '';
+    
+    switch(type) {
+        case 'shengmu':
+            message = '开始学习声母<br>声母是拼音的开头部分，共有23个';
+            pinyin = 'b p m f d t n l g k h j q x zh ch sh r z c s y w';
+            break;
+        case 'yunmu':
+            message = '开始学习韵母<br>韵母是拼音的主要发音部分，共有24个';
+            pinyin = 'a o e i u ü ai ei ui ao ou iu ie üe er an en in un ün ang eng ing ong';
+            break;
+        case 'shengdiao':
+            message = '开始学习声调<br>汉语有四个声调，决定字的意思';
+            pinyin = 'mā má mǎ mà';
+            break;
+    }
+    
+    showNotification(message, 'info');
+    document.getElementById('currentPinyin').innerHTML = pinyin.split(' ').map(p => 
+        `<span class="pinyin-char" onclick="playAudio('${p}')">${p}</span>`
+    ).join(' ');
+    
+    // 播放第一个拼音
+    if (pinyin) {
+        const firstPinyin = pinyin.split(' ')[0];
+        setTimeout(() => playAudio(firstPinyin), 500);
+    }
+}
+
+// 播放音频（包装函数）
+function playAudio(pinyin) {
+    if (window.audioManager) {
+        audioManager.playPinyin(pinyin);
+    }
+}
+
+function playCurrentPinyin() {
+    const current = document.getElementById('currentPinyin').textContent;
+    if (current && current !== '点击生成拼音') {
+        playAudio(current);
+    }
+}
+
+function repeatPlay() {
+    if (window.audioManager) {
+        audioManager.repeatPlay();
+    }
+}
+
+function togglePlay() {
+    if (window.audioManager) {
+        audioManager.togglePlay();
+    }
+}
+
+function recordAudio() {
+    if (window.audioManager) {
+        audioManager.recordAudio();
+    }
+}
+
+function changeVolume(value) {
+    if (window.audioManager) {
+        audioManager.changeVolume(value);
+    }
+}
+
+// 生成随机拼音
+function generateRandomPinyin() {
+    const shengmu = ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'j', 'q', 'x'];
+    const yunmu = ['a', 'o', 'e', 'i', 'u', 'ü', 'ai', 'ei', 'ao', 'ou', 'an', 'en', 'ang', 'eng'];
+    const tones = ['', '̄', '́', '̌', '̀']; // 无声调, 1声, 2声, 3声, 4声
+    const toneNames = ['', '¹', '²', '³', '⁴'];
+    
+    const s = shengmu[Math.floor(Math.random() * shengmu.length)];
+    const y = yunmu[Math.floor(Math.random() * yunmu.length)];
+    const toneIndex = Math.floor(Math.random() * tones.length);
+    
+    let pinyin = s + y;
+    if (toneIndex > 0) {
+        pinyin = s + y + tones[toneIndex];
+    }
+    
+    const displayText = toneIndex > 0 ? 
+        `${s}${y}${toneNames[toneIndex]}` : 
+        `${s}${y}`;
+    
+    document.getElementById('currentPinyin').innerHTML = 
+        `<span class="pinyin-char" onclick="playAudio('${s}${y}')">${displayText}</span>`;
+    
+    showNotification(`生成拼音: ${displayText}`, 'info');
+}
+
+// 释放星光特效
+function showStars() {
+    for(let i = 0; i < 30; i++) {
+        setTimeout(() => {
+            const star = document.createElement('div');
+            star.innerHTML = '✨';
+            star.style.cssText = `
+                position: fixed;
+                font-size: 28px;
+                left: ${Math.random() * 100}vw;
+                top: 100vh;
+                animation: flyUp 3s linear forwards;
+                z-index: 1000;
+                pointer-events: none;
+                opacity: 0.8;
+            `;
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), 3000);
+        }, i * 100);
+    }
+    
+    // 添加CSS动画
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes flyUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// 分享网站
+function shareSite() {
+    const url = 'https://haiwuyutu.github.io/Serena/';
+    const text = '来看看这个超美的光遇风格拼音学习网站！✨';
+    
+    if (navigator.share) {
+        navigator.share({
+            title: '拼音星河',
+            text: text,
+            url: url
+        });
+    } else {
+        navigator.clipboard.writeText(url).then(() => {
+            showNotification('链接已复制到剪贴板！', 'success');
+        });
+    }
+}
+
+// 显示通知（兼容性）
+function showNotification(message, type = 'info') {
+    if (window.audioManager && audioManager.showNotification) {
+        audioManager.showNotification(message, type);
+    } else {
+        alert(message);
+    }
+}
+
+// 添加CSS动画
+document.head.insertAdjacentHTML('beforeend', `
+    <style>
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .dark-mode {
+            filter: invert(1) hue-rotate(180deg);
+        }
+    </style>
+`);
