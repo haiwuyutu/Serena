@@ -1,1 +1,179 @@
-[这里粘贴上面第三步的HTML代码]
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光遇风格拼音学习 | 拼音学习乐园</title>
+    <meta name="description" content="在光遇的梦幻世界中轻松学习汉语拼音">
+    
+    <!-- CSS 文件 -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+        <div class="star"></div>
+        <div class="star star2"></div>
+        <div class="cloud"></div>
+        <div class="cloud cloud2"></div>
+    </div>
+    
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-cloud-sun fa-2x"></i>
+                <h1>拼音学习乐园</h1>
+            </div>
+            <div class="user-info">
+                <div class="avatar">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <span class="username">学习者</span>
+            </div>
+        </header>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 游戏状态栏 -->
+            <div class="status-bar">
+                <div class="stats">
+                    <div class="stat-item">
+                        <i class="fas fa-trophy"></i>
+                        <span>得分: <span id="score">0</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>正确: <span id="correct">0</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>时间: <span id="timer">60</span>s</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-fire"></i>
+                        <span>连击: <span id="combo">0</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 游戏区域 -->
+            <div class="game-container">
+                <!-- 拼音显示区 -->
+                <div class="pinyin-display-container">
+                    <div class="pinyin-display" id="pinyinDisplay">
+                        <span class="initial">p</span>
+                        <span class="final">īnyīn</span>
+                        <span class="tone tone-1">¯</span>
+                    </div>
+                    <div class="pinyin-hint" id="pinyinHint">
+                        点击喇叭图标听发音
+                    </div>
+                </div>
+                
+                <!-- 音频控制 -->
+                <div class="audio-controls">
+                    <button class="audio-btn" id="playAudio">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <button class="audio-btn" id="slowAudio">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </button>
+                    <button class="audio-btn" id="repeatAudio">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+                
+                <!-- 答案选择区 -->
+                <div class="answers-container" id="answersContainer">
+                    <!-- 答案按钮将通过JS动态生成 -->
+                </div>
+                
+                <!-- 控制按钮 -->
+                <div class="control-buttons">
+                    <button class="btn start-btn" id="startBtn">
+                        <i class="fas fa-play"></i> 开始游戏
+                    </button>
+                    <button class="btn pause-btn" id="pauseBtn" style="display: none;">
+                        <i class="fas fa-pause"></i> 暂停
+                    </button>
+                    <button class="btn next-btn" id="nextBtn" style="display: none;">
+                        <i class="fas fa-forward"></i> 下一题
+                    </button>
+                    <button class="btn restart-btn" id="restartBtn">
+                        <i class="fas fa-sync-alt"></i> 重新开始
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 进度和统计 -->
+            <div class="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="level-info">
+                    <span>关卡: <span id="currentLevel">1</span>/10</span>
+                    <span>进度: <span id="progressPercent">0%</span></span>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-book"></i> 学习内容</h3>
+                <ul class="lesson-list" id="lessonList">
+                    <!-- 课程列表将通过JS动态生成 -->
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fas fa-chart-bar"></i> 学习统计</h3>
+                <div class="stats-chart">
+                    <canvas id="statsChart" width="200" height="150"></canvas>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fas fa-cog"></i> 设置</h3>
+                <div class="settings">
+                    <label>
+                        <input type="checkbox" id="soundToggle" checked> 音效
+                    </label>
+                    <label>
+                        <input type="checkbox" id="musicToggle" checked> 背景音乐
+                    </label>
+                    <label>
+                        难度: 
+                        <select id="difficultySelect">
+                            <option value="easy">简单</option>
+                            <option value="medium" selected>中等</option>
+                            <option value="hard">困难</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- 底部 -->
+    <footer class="footer">
+        <p>© 2024 拼音学习乐园 | 光遇风格拼音学习系统</p>
+        <p class="version">版本 1.0.0</p>
+    </footer>
+    
+    <!-- JavaScript 文件 -->
+    <script src="js/data.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/manager.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/audio-manager.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

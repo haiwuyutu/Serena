@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>拼音游戏测试</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 拼音学习乐园</h1>
+    <p>光遇风格拼音学习系统</p>
+    
+    <div style="margin: 30px;">
+        <a href="index.html" class="btn">进入完整版游戏</a>
+        <a href="#" onclick="startDemo()" class="btn">快速体验</a>
+    </div>
+    
+    <script>
+        function startDemo() {
+            alert("游戏即将开始！请先确保服务器运行在 http://localhost:8080");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
